@@ -149,7 +149,7 @@ From real-time tracking to tactical insights, it delivers **data-driven intellig
 ## 📬 Contact  
 👤 **Janardhan Reddy Illuru**  
 - 🌐 GitHub: [Jana2207](https://github.com/Jana2207)  
-- 💼 LinkedIn: [Janardhan Reddy Illuru](https://linkedin.com/in/janardhan-reddy-illuru)  
+- 💼 LinkedIn: [Janardhan Reddy Illuru](https://www.linkedin.com/in/jana2207/)  
 - 📧 Email: **janareddy2207@gmail.com**  
 
 ---
