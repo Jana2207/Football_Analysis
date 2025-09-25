@@ -1,97 +1,155 @@
-# AI/ML Football Analysis System
+# ⚽🔥 AI/ML Football Match Analysis 🚀  
 
-This project is an **end-to-end AI/ML solution for football video analysis**, designed to detect and track players, referees, and footballs, and provide in-depth statistical insights such as **team ball acquisition, player speed, and distance covered**. The system robustly handles **camera movements and perspective distortions**, offering a comprehensive understanding of building a real-world machine learning system for sports analytics.
-
----
-
-## 📖 Project Overview
-
-The system analyzes football matches from video footage using **state-of-the-art object detection and tracking**. Beyond simple detection, it:
-
-- Assigns players to teams.
-- Estimates camera motion and corrects for perspective distortions.
-- Calculates precise player statistics in **real-world units** (meters and km/h).
-- Demonstrates handling of real-world challenges with a wide range of **computer vision and machine learning techniques**.
+![Sample Output](output_videos/screenshot.png)  
 
 ---
 
-## ✨ Key Features & Components
+## 🎯 Introduction  
+Welcome to the **AI-powered Football Match Analysis Project**! 🏆⚡  
 
-1. **Object Detection**
-    - Utilizes **YOLO (You Only Look Once)** for detecting players, referees, and footballs.
-    - Fine-tunes the model on a **custom annotated dataset** to handle rare ball detections and avoid misclassifications.
-
-2. **Model Training & Fine-tuning**
-    - Trains **YOLOv5** on the "football player detection image dataset" from **Roboflow**.
-    - GPU-accelerated training on **Google Colab** for efficient processing.
-
-3. **Object Tracking**
-    - Assigns consistent IDs to detected objects across frames using **ByteTrack-based tracker** (via the **supervision** library).
-
-4. **Team Assignment**
-    - Uses **K-means clustering** on player bounding box pixels to assign players to teams.
-    - Handles ambiguous goalkeeper colors with hardcoded rules for consistency.
-
-5. **Ball Acquisition Analysis**
-    - Interpolates missing ball detections for continuity.
-    - Assigns the ball to the closest player and calculates **ball possession percentage**.
-
-6. **Camera Movement Estimation**
-    - Uses **optical flow** (`cv2.calcOpticalFlowPyrLK`) to track camera shifts.
-    - Adjusts player positions for camera motion for accurate movement analysis.
-
-7. **Perspective Transformation**
-    - Converts pixel coordinates into **real-world meters** using `cv2.getPerspectiveTransform`.
-    - Filters out detections outside the transformed court area.
-
-8. **Player Speed and Distance Calculation**
-    - Calculates **player speed (km/h)** and **distance covered (meters)** using real-world positions.
-    - Smooths speed calculations over a defined frame window.
-
-9. **Advanced Visualizations & Annotations**
-    - Uses **custom annotations**: semicircles for players, yellow semicircles for referees, green triangles for ball.
-    - Displays **player IDs, team numbers, ball possession**, and **speed/distance metrics** on video overlays.
-
-10. **Development Utilities**
-    - `video_utils.py` for reading/saving videos.
-    - `bbbox_utils.py` for bounding box calculations.
-    - **Pickle caching** for expensive computations to accelerate development.
+This project uses **Deep Learning + Computer Vision** to detect, track, and analyze football gameplay in real-time. The system provides:  
+- 👀 Continuous **ball & player detection**  
+- 🏃‍♂️ Player tracking with unique IDs  
+- 🎽 Team classification by jersey color  
+- ⚡ Speed estimation of players  
+- 📊 Ball possession stats for each team  
+- 🎥 Camera motion compensation  
+- 🧠 Smart visualizations for better game insights  
 
 ---
 
-## 🛠️ Skills and Technologies Used
-
-### Programming Languages & Concepts
-- **Python**: Main language for ML, computer vision, and data processing.
-- **OOP & Modular Programming**: Classes like `Tracker`, `TeamAssigner`, `CameraMovementEstimator` ensure reusable, maintainable code.
-
-### Machine Learning & Computer Vision
-- **YOLOv5 / YOLOv8**: Object detection models.
-- **Ultralytics**: YOLO integration for training and inference.
-- **OpenCV (cv2)**: Video I/O, image processing, optical flow, and perspective transformation.
-- **K-means Clustering (scikit-learn)**: Team assignment via color segmentation.
-- **Supervision (sv)**: ByteTrack object tracking.
-
-### Data Handling & Scientific Computing
-- **Pandas**: Data manipulation (e.g., ball interpolation).  
-- **NumPy**: Numerical operations, distance calculations.  
-- **pickle**: Cache intermediate results for faster development.
-
-### Development Tools
-- **VS Code**, **Google Colab**, **Jupyter Notebooks**: Development, GPU training, visualization.  
-- **Git & GitHub**: Version control and collaboration.  
-- **Matplotlib**: Visualization for development/debugging.
-
-### Mathematical & Algorithmic Concepts
-- **Optical Flow**: Motion estimation between frames.
-- **Perspective Geometry**: Pixel-to-real-world coordinate transformation.
-- **Euclidean Distance**: Calculating distances between players, ball, and features.
+## 🤖 Models Used  
+- 🟢 **YOLOv5x** → Custom trained for object detection (players, referees, ball).  
+- 🔵 **YOLOv8x** → Tested for higher precision and real-time inference.  
 
 ---
 
-## 🚀 Getting Started
+## 🚩 Challenges, Solutions & Impact  
 
-1. **Clone the Repository**
-```bash
-git clone <repository_url>
-cd <project_directory>
+### 1️⃣ Ball not detected continuously + outside objects 🚫⚽  
+- **Reason**: YOLO pretrained on generic dataset, detecting unnecessary objects.  
+- **Solution**:  
+  - Annotated dataset using **Roboflow**.  
+  - Trained **YOLOv5x for 100 epochs** on players, referees, goalkeepers, and ball.  
+- **Impact**: ✅ Ball detected more consistently, irrelevant objects ignored.  
+
+---
+
+### 2️⃣ Player Tracking Across Frames 🏃‍♂️🔢  
+- **Reason**: Bounding boxes don’t correlate frame-to-frame.  
+- **Solution**:  
+  - Used **ByteTrack** → assigns `tracker_id` to each object.  
+  - Merged goalkeepers into player class (due to small dataset).  
+- **Impact**: ✅ Seamless tracking of players across the entire match.  
+
+---
+
+### 3️⃣ Cluttered Bounding Boxes 📦👀  
+- **Reason**: Rectangles obscure gameplay & field view.  
+- **Solution**:  
+  - Replaced with **ellipses under players/referees**.  
+  - Displayed **unique IDs** inside ellipses.  
+- **Impact**: ✅ Cleaner visualization & smoother viewing experience.  
+
+---
+
+### 4️⃣ Differentiating Teams 🎽🔴🔵  
+- **Reason**: YOLO detects players but not teams.  
+- **Solution**:  
+  - Extracted jersey color.  
+  - Applied **K-Means (k=2)** for clustering into two teams.  
+  - Segmented jersey from pitch using image segmentation.  
+- **Impact**: ✅ Each player shown with ellipse in **team color** (e.g., red vs blue).  
+
+---
+
+### 5️⃣ Small Dataset → Ball Detection Issues ⚽❌  
+- **Solution**:  
+  - Applied **interpolation** → assumed linear motion frame-to-frame.  
+- **Impact**: ✅ Continuous ball trajectory reconstructed.  
+
+---
+
+### 6️⃣ Highlighting Player in Possession 🌟👟  
+- **Reason**: No direct relation between ball & player.  
+- **Solution**:  
+  - Found nearest player to ball using **distance threshold**.  
+  - Highlighted player visually.  
+- **Impact**: ✅ Clear indication of who controls the ball.  
+
+---
+
+### 7️⃣ Team Ball Possession Stats 📊🏆  
+- **Solution**:  
+  - Measured possession duration per player.  
+  - Aggregated by team.  
+- **Impact**: ✅ Generated meaningful stats like **team dominance %**.  
+
+---
+
+### 8️⃣ Camera Motion 🎥↔️  
+- **Reason**: Camera pans/zooms → relative displacement.  
+- **Solution**:  
+  - Detected **static features** (ground corners, roof) via **Optical Flow**.  
+  - Estimated displacement for camera motion.  
+- **Impact**: ✅ Camera movement compensated → stable analysis.  
+
+---
+
+### 9️⃣ Independent Player Motion 🏃‍♂️➡️  
+- **Solution**:  
+  - Subtracted camera motion vector from player tracks.  
+- **Impact**: ✅ True player movement isolated from camera shifts.  
+
+---
+
+### 🔟 Perspective Transformation 📐⚽  
+- **Reason**: Camera not perpendicular → distorted measurements.  
+- **Solution**:  
+  - Selected trapezoid region of ground.  
+  - Applied **perspective transform** for correct scaling.  
+- **Impact**: ✅ Accurate distance & position mapping.  
+
+---
+
+### 1️⃣1️⃣ Player Speed Estimation ⚡🏃‍♂️  
+- **Solution**:  
+  - Used first & last detection frames + timestamps.  
+  - Measured distance traveled (perspective-corrected).  
+  - Converted to **km/h**.  
+- **Impact**: ✅ Player speeds annotated live during gameplay.  
+
+---
+
+## 🛠️ Skills & Technologies Used  
+- 🧠 **Deep Learning**: YOLOv5x, YOLOv8x, PyTorch  
+- 👀 **Computer Vision**: OpenCV, Optical Flow, Perspective Transformation  
+- 🎯 **Tracking**: ByteTrack  
+- 🎨 **Clustering & Segmentation**: K-Means, Image Segmentation  
+- 📝 **Data Annotation**: Roboflow  
+- 💻 **Programming**: Python  
+- 📊 **Visualization**: Ellipse annotations, Matplotlib  
+
+---
+
+## 🌍 Real-Life Applications  
+- 📺 **Sports Broadcasting** → Enhanced viewer experience with AI overlays.  
+- 🏆 **Team Analytics** → Coaches analyze player performance & ball control.  
+- 🎯 **Scouting & Recruitment** → Track potential players’ stats.  
+- 🎮 **Game Simulation** → Useful for esports training & tactical analysis.  
+
+---
+
+## 📌 Conclusion  
+This project shows how **AI + Computer Vision** can **revolutionize football analysis** ⚽🤖.  
+From real-time tracking to tactical insights, it delivers **data-driven intelligence** that benefits players, coaches, broadcasters, and fans alike.  
+
+---
+
+## 📬 Contact  
+👤 **Janardhan Reddy Illuru**  
+- 🌐 GitHub: [Jana2207](https://github.com/Jana2207)  
+- 💼 LinkedIn: [Janardhan Reddy Illuru](https://linkedin.com/in/janardhan-reddy-illuru)  
+- 📧 Email: **janareddy2207@gmail.com**  
+
+---
